@@ -131,6 +131,15 @@ class BorrowOrderDetailResource(BaseResource):
 
 
 class BorrowOrderReturnResource(BaseResource):
+    def on_get(self, req, resp, order_id):
+        order = BorrowOrder.get_by_id(order_id)
+        items = BorrowItem.select().where(BorrowItem.borrow_order == order_id).join(Equipment)
+        
+        html = render_template('borrow_order/_return_form.html', {'order': order, 'items': items})
+        resp.status = 200
+        resp.content_type = 'text/html; charset=utf-8'
+        resp.text = html
+
     def on_post(self, req, resp, order_id):
         data = self.parse_data(req)
         current_user = req.context['user']
@@ -143,12 +152,12 @@ class BorrowOrderReturnResource(BaseResource):
             
             item_data = {}
             for key, value in data.items():
-                if key.startswith('condition_'):
-                    item_id = int(key.replace('condition_', ''))
+                if key.startswith('return_condition_'):
+                    item_id = int(key.replace('return_condition_', ''))
                     item_data[item_id] = {
                         'condition': value,
-                        'status': data.get(f'status_{item_id}', 'returned'),
-                        'remark': data.get(f'remark_{item_id}', '')
+                        'status': data.get(f'return_status_{item_id}', 'returned'),
+                        'remark': data.get(f'return_remark_{item_id}', '')
                     }
             
             for item_id, info in item_data.items():

@@ -23,14 +23,16 @@ class InspectionResource(BaseResource):
         
         status = data.get('status')
         problem_type = data.get('problem_type')
-        order_id = data.get('order_id')
+        class_id = data.get('class_id')
         
         if status:
             query = query.where(InspectionRecord.status == status)
         if problem_type:
+            if problem_type == 'lost':
+                problem_type = 'missing'
             query = query.where(InspectionRecord.problem_type == problem_type)
-        if order_id:
-            query = query.where(InspectionRecord.borrow_order == order_id)
+        if class_id:
+            query = query.where(InspectionRecord.borrow_order.grade_class == class_id)
         
         inspections = query.order_by(InspectionRecord.inspection_time.desc())
         
@@ -38,13 +40,16 @@ class InspectionResource(BaseResource):
             BorrowOrder.return_status.in_(['inspecting', 'partial'])
         ).order_by(BorrowOrder.borrow_time.desc())
         
+        classes = GradeClass.select().order_by(GradeClass.grade, GradeClass.class_number)
+        
         context = {
             'inspections': inspections,
             'orders': orders,
+            'classes': classes,
             'filters': {
                 'status': status,
                 'problem_type': problem_type,
-                'order_id': order_id
+                'class_id': class_id
             }
         }
         self.render(resp, 'inspection/list.html', context)
@@ -57,9 +62,12 @@ class InspectionResource(BaseResource):
             borrow_item_id = data.get('borrow_item_id')
             equipment_id = int(data.get('equipment_id'))
             problem_type = data.get('problem_type')
+            if problem_type == 'lost':
+                problem_type = 'missing'
             handling_path = data.get('handling_path')
             
-            validate_problem_type_distinction(problem_type, handling_path)
+            if handling_path:
+                validate_problem_type_distinction(problem_type, handling_path)
             
             inspection = InspectionRecord.create(
                 borrow_order=order_id,
@@ -69,7 +77,7 @@ class InspectionResource(BaseResource):
                 problem_type=problem_type,
                 problem_description=data.get('problem_description'),
                 handling_path=handling_path,
-                status='pending',
+                status=data.get('status', 'pending'),
                 remark=data.get('remark')
             )
             
@@ -174,7 +182,10 @@ class InspectionCloseResource(BaseResource):
 
 
 class InspectionEquipmentSearchResource(BaseResource):
-    def on_get(self, req, resp, order_id):
+    def on_get(self, req, resp, order_id=None):
+        if order_id is None:
+            data = self.parse_data(req)
+            order_id = int(data.get('borrow_order_id'))
         order = BorrowOrder.get_by_id(order_id)
         items = BorrowItem.select().where(
             BorrowItem.borrow_order == order_id,

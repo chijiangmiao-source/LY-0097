@@ -1,0 +1,80 @@
+<div class="modal-overlay" style="display: flex;">
+    <div class="modal-content">
+        <div class="box">
+            <div class="level">
+                <div class="level-left">
+                    <h2 class="subtitle">归还登记 - {{ order.order_no }}</h2>
+                </div>
+                <div class="level-right">
+                    <button class="delete" onclick="closeModal()"></button>
+                </div>
+            </div>
+            <form hx-post="/borrow-orders/{{ order.id }}/return" hx-target="#modal" hx-swap="innerHTML">
+                <div class="field">
+                    <label class="label">归还时间</label>
+                    <div class="control">
+                        <input class="input" type="datetime-local" name="return_time" required>
+                    </div>
+                </div>
+                <div class="box">
+                    <h3 class="is-size-5 mb-3">器材归还状态</h3>
+                    <table class="table is-fullwidth is-striped">
+                        <thead>
+                            <tr>
+                                <th>器材编号</th>
+                                <th>器材名称</th>
+                                <th>领用时状态</th>
+                                <th>归还时状态</th>
+                                <th>归还状态</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>{{ item.equipment.equipment_no }}</td>
+                                <td>{{ item.equipment.name }}</td>
+                                <td>
+                                    <span class="status-badge {% if item.borrow_condition == 'good' %}status-good{% elif item.borrow_condition == 'damaged' %}status-damaged{% else %}status-pending{% endif %}">
+                                        {{ item.borrow_condition | status_label('equipment_condition') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="select is-small">
+                                        <select name="return_condition_{{ item.id }}" required>
+                                            <option value="">选择状态</option>
+                                            <option value="good">完好</option>
+                                            <option value="damaged">损坏</option>
+                                            <option value="missing">缺失</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="select is-small">
+                                        <select name="return_status_{{ item.id }}" required>
+                                            <option value="returned">已归还</option>
+                                            <option value="damaged">损坏</option>
+                                            <option value="missing">缺失</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input class="input is-small" type="text" name="return_remark_{{ item.id }}" placeholder="备注">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="field is-grouped is-grouped-right">
+                    <div class="control">
+                        <button type="button" class="button" onclick="closeModal()">取消</button>
+                    </div>
+                    <div class="control">
+                        <button type="submit" class="button is-success">确认归还</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

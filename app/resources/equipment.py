@@ -30,7 +30,7 @@ class EquipmentResource(BaseResource):
         categories = EquipmentCategory.select().order_by(EquipmentCategory.name)
         
         context = {
-            'equipment_list': equipment_list,
+            'equipment': equipment_list,
             'rooms': rooms,
             'categories': categories,
             'filters': {

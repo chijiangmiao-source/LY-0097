@@ -56,19 +56,15 @@
     {% include 'borrow_order/_items.html' %}
 </div>
 
-{% if order.return_status == 'pending' %}
+{% if order.return_status == 'returned' %}
 <div class="box">
-    <h2 class="subtitle">归还登记</h2>
-    <form hx-post="/borrow-orders/{{ order.id }}/return" hx-target="#borrow-items-container" hx-swap="innerHTML">
-        <div class="field is-grouped is-grouped-right">
-            <div class="control">
-                <button type="submit" class="button is-success">
-                    <span class="icon"><i class="fas fa-check"></i></span>
-                    <span>确认归还</span>
-                </button>
-            </div>
+    <h2 class="subtitle">归还信息</h2>
+    <div class="columns">
+        <div class="column">
+            <p><strong>归还时间：</strong>{{ order.return_time | format_date }}</p>
+            <p><strong>操作员：</strong>{{ order.operator.full_name }}</p>
         </div>
-    </form>
+    </div>
 </div>
 {% endif %}
 {% endblock %}

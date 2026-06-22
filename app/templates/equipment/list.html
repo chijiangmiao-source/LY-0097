@@ -18,7 +18,7 @@
         <div class="column is-3">
             <label class="label">关键词搜索</label>
             <div class="control has-icons-left">
-                <input class="input" type="text" name="keyword" placeholder="器材编号/名称" value="{{ keyword if keyword else '' }}" hx-get="/equipment" hx-trigger="keyup changed delay:500ms" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='category'],[name='room'],[name='condition'],[name='status']">
+                <input class="input" type="text" name="keyword" placeholder="器材编号/名称" value="{{ filters.keyword if filters.keyword else '' }}" hx-get="/equipment" hx-trigger="keyup changed delay:500ms" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='category_id'],[name='room_id'],[name='condition'],[name='status']">
                 <span class="icon is-left">
                     <i class="fas fa-search"></i>
                 </span>
@@ -28,10 +28,10 @@
             <label class="label">分类</label>
             <div class="control">
                 <div class="select is-fullwidth">
-                    <select name="category" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='room'],[name='condition'],[name='status']">
+                    <select name="category_id" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='room_id'],[name='condition'],[name='status']">
                         <option value="">全部分类</option>
                         {% for cat in categories %}
-                        <option value="{{ cat.id }}" {% if category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                        <option value="{{ cat.id }}" {% if filters.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -41,10 +41,10 @@
             <label class="label">器材室</label>
             <div class="control">
                 <div class="select is-fullwidth">
-                    <select name="room" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='category'],[name='condition'],[name='status']">
+                    <select name="room_id" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='category_id'],[name='condition'],[name='status']">
                         <option value="">全部器材室</option>
                         {% for r in rooms %}
-                        <option value="{{ r.id }}" {% if room_id == r.id %}selected{% endif %}>{{ r.name }}</option>
+                        <option value="{{ r.id }}" {% if filters.room_id == r.id %}selected{% endif %}>{{ r.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -54,11 +54,11 @@
             <label class="label">完好状态</label>
             <div class="control">
                 <div class="select is-fullwidth">
-                    <select name="condition" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='category'],[name='room'],[name='status']">
+                    <select name="condition" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='category_id'],[name='room_id'],[name='status']">
                         <option value="">全部状态</option>
-                        <option value="good" {% if condition == 'good' %}selected{% endif %}>完好</option>
-                        <option value="damaged" {% if condition == 'damaged' %}selected{% endif %}>损坏</option>
-                        <option value="repairing" {% if condition == 'repairing' %}selected{% endif %}>维修中</option>
+                        <option value="good" {% if filters.condition == 'good' %}selected{% endif %}>完好</option>
+                        <option value="damaged" {% if filters.condition == 'damaged' %}selected{% endif %}>损坏</option>
+                        <option value="repairing" {% if filters.condition == 'repairing' %}selected{% endif %}>维修中</option>
                     </select>
                 </div>
             </div>
@@ -67,11 +67,11 @@
             <label class="label">当前状态</label>
             <div class="control">
                 <div class="select is-fullwidth">
-                    <select name="status" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='category'],[name='room'],[name='condition']">
+                    <select name="status" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='category_id'],[name='room_id'],[name='condition']">
                         <option value="">全部状态</option>
-                        <option value="available" {% if status == 'available' %}selected{% endif %}>可用</option>
-                        <option value="borrowed" {% if status == 'borrowed' %}selected{% endif %}>已借出</option>
-                        <option value="scrapped" {% if status == 'scrapped' %}selected{% endif %}>已报废</option>
+                        <option value="available" {% if filters.status == 'available' %}selected{% endif %}>可用</option>
+                        <option value="borrowed" {% if filters.status == 'borrowed' %}selected{% endif %}>已借出</option>
+                        <option value="scrapped" {% if filters.status == 'scrapped' %}selected{% endif %}>已报废</option>
                     </select>
                 </div>
             </div>

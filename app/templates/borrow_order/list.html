@@ -19,10 +19,10 @@
             <label class="label">班级</label>
             <div class="control">
                 <div class="select is-fullwidth">
-                    <select name="class_id" hx-get="/borrow-orders" hx-trigger="change" hx-target="#order-list-container" hx-swap="innerHTML" hx-include="[name='status'],[name='start_date'],[name='end_date']">
+                    <select name="class_id" hx-get="/borrow-orders" hx-trigger="change" hx-target="#order-list-container" hx-swap="innerHTML" hx-include="[name='return_status']">
                         <option value="">全部班级</option>
                         {% for cls in classes %}
-                        <option value="{{ cls.id }}" {% if class_id == cls.id %}selected{% endif %}>{{ cls.full_name }}</option>
+                        <option value="{{ cls.id }}" {% if filters.class_id == cls.id %}selected{% endif %}>{{ cls.full_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -32,25 +32,19 @@
             <label class="label">归还状态</label>
             <div class="control">
                 <div class="select is-fullwidth">
-                    <select name="status" hx-get="/borrow-orders" hx-trigger="change" hx-target="#order-list-container" hx-swap="innerHTML" hx-include="[name='class_id'],[name='start_date'],[name='end_date']">
+                    <select name="return_status" hx-get="/borrow-orders" hx-trigger="change" hx-target="#order-list-container" hx-swap="innerHTML" hx-include="[name='class_id']">
                         <option value="">全部状态</option>
-                        <option value="pending" {% if status == 'pending' %}selected{% endif %}>待归还</option>
-                        <option value="returned" {% if status == 'returned' %}selected{% endif %}>已归还</option>
-                        <option value="closed" {% if status == 'closed' %}selected{% endif %}>已结案</option>
+                        <option value="pending" {% if filters.return_status == 'pending' %}selected{% endif %}>待归还</option>
+                        <option value="returned" {% if filters.return_status == 'returned' %}selected{% endif %}>已归还</option>
+                        <option value="closed" {% if filters.return_status == 'closed' %}selected{% endif %}>已结案</option>
                     </select>
                 </div>
             </div>
         </div>
-        <div class="column is-3">
-            <label class="label">开始日期</label>
+        <div class="column is-4">
+            <label class="label">关键词搜索</label>
             <div class="control">
-                <input class="input" type="date" name="start_date" value="{{ start_date if start_date else '' }}" hx-get="/borrow-orders" hx-trigger="change" hx-target="#order-list-container" hx-swap="innerHTML" hx-include="[name='class_id'],[name='status'],[name='end_date']">
-            </div>
-        </div>
-        <div class="column is-3">
-            <label class="label">结束日期</label>
-            <div class="control">
-                <input class="input" type="date" name="end_date" value="{{ end_date if end_date else '' }}" hx-get="/borrow-orders" hx-trigger="change" hx-target="#order-list-container" hx-swap="innerHTML" hx-include="[name='class_id'],[name='status'],[name='start_date']">
+                <input class="input" type="text" name="keyword" placeholder="搜索领用单号或教师姓名" value="{{ filters.keyword if filters.keyword else '' }}" hx-get="/borrow-orders" hx-trigger="input changed delay:500ms" hx-target="#order-list-container" hx-swap="innerHTML">
             </div>
         </div>
     </div>

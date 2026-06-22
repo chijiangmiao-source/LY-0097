@@ -58,7 +58,7 @@ class LiabilityJudgmentResource(BaseResource):
         data = self.parse_data(req)
         current_user = req.context['user']
         try:
-            inspection_id = int(data.get('inspection_id'))
+            inspection_id = int(data.get('inspection_record_id'))
             existing = LiabilityJudgment.select().where(
                 LiabilityJudgment.inspection_record == inspection_id
             ).first()
@@ -99,7 +99,14 @@ class LiabilityJudgmentDetailResource(BaseResource):
     def on_get(self, req, resp, judgment_id):
         judgment = LiabilityJudgment.get_by_id(judgment_id)
         if req.headers.get('HX-Request'):
-            html = render_template('liability/_form.html', {'judgment': judgment})
+            pending_inspections = InspectionRecord.select().where(
+                InspectionRecord.status != 'closed',
+                ~InspectionRecord.id.in_(
+                    LiabilityJudgment.select(LiabilityJudgment.inspection_record_id)
+                )
+            ).join(Equipment).switch(InspectionRecord).join(GradeClass)
+            classes = GradeClass.select().order_by(GradeClass.grade, GradeClass.class_number)
+            html = render_template('liability/_form.html', {'judgment': judgment, 'inspections': pending_inspections, 'classes': classes})
             resp.status = 200
             resp.content_type = 'text/html; charset=utf-8'
             resp.text = html
