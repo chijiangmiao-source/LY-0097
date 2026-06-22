@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}责任判定管理{% endblock %}
+{% block content %}
+<div class="level">
+    <div class="level-left">
+        <h1 class="title">责任判定管理</h1>
+    </div>
+    <div class="level-right">
+        <button class="button is-primary" hx-get="/liability/new" hx-target="#modal" hx-swap="innerHTML">
+            <span class="icon"><i class="fas fa-plus"></i></span>
+            <span>添加责任判定</span>
+        </button>
+    </div>
+</div>
+
+<div class="box">
+    <div class="columns is-multiline">
+        <div class="column is-3">
+            <label class="label">班级</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="class_id" hx-get="/liability" hx-trigger="change" hx-target="#liability-list-container" hx-swap="innerHTML" hx-include="[name='liability_type'],[name='is_confirmed']">
+                        <option value="">全部班级</option>
+                        {% for cls in classes %}
+                        <option value="{{ cls.id }}" {% if class_id == cls.id %}selected{% endif %}>{{ cls.full_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="column is-3">
+            <label class="label">责任类型</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="liability_type" hx-get="/liability" hx-trigger="change" hx-target="#liability-list-container" hx-swap="innerHTML" hx-include="[name='class_id'],[name='is_confirmed']">
+                        <option value="">全部类型</option>
+                        <option value="student" {% if liability_type == 'student' %}selected{% endif %}>学生责任</option>
+                        <option value="teacher" {% if liability_type == 'teacher' %}selected{% endif %}>教师责任</option>
+                        <option value="school" {% if liability_type == 'school' %}selected{% endif %}>学校责任</option>
+                        <option value="natural" {% if liability_type == 'natural' %}selected{% endif %}>自然损耗</option>
+                        <option value="other" {% if liability_type == 'other' %}selected{% endif %}>其他责任</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="column is-3">
+            <label class="label">确认状态</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="is_confirmed" hx-get="/liability" hx-trigger="change" hx-target="#liability-list-container" hx-swap="innerHTML" hx-include="[name='class_id'],[name='liability_type']">
+                        <option value="">全部状态</option>
+                        <option value="1" {% if is_confirmed == '1' %}selected{% endif %}>已确认</option>
+                        <option value="0" {% if is_confirmed == '0' %}selected{% endif %}>待确认</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="box" id="liability-list-container">
+    <table class="table is-fullwidth is-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>抽查记录ID</th>
+                <th>班级</th>
+                <th>器材</th>
+                <th>责任类型</th>
+                <th>责任人</th>
+                <th>判定时间</th>
+                <th>判定人</th>
+                <th>确认状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="liability-list">
+            {% for judgment in judgments %}
+            {% include 'liability/_row.html' %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if not judgments %}
+    <p class="has-text-centered has-text-grey py-6">暂无数据</p>
+    {% endif %}
+</div>
+{% endblock %}

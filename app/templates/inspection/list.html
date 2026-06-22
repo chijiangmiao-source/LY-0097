@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}抽查记录管理{% endblock %}
+{% block content %}
+<div class="level">
+    <div class="level-left">
+        <h1 class="title">抽查记录管理</h1>
+    </div>
+    <div class="level-right">
+        <button class="button is-primary" hx-get="/inspections/new" hx-target="#modal" hx-swap="innerHTML">
+            <span class="icon"><i class="fas fa-plus"></i></span>
+            <span>添加抽查记录</span>
+        </button>
+    </div>
+</div>
+
+<div class="box">
+    <div class="columns is-multiline">
+        <div class="column is-3">
+            <label class="label">班级</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="class_id" hx-get="/inspections" hx-trigger="change" hx-target="#inspection-list-container" hx-swap="innerHTML" hx-include="[name='status'],[name='problem_type']">
+                        <option value="">全部班级</option>
+                        {% for cls in classes %}
+                        <option value="{{ cls.id }}" {% if class_id == cls.id %}selected{% endif %}>{{ cls.full_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="column is-3">
+            <label class="label">处理状态</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="status" hx-get="/inspections" hx-trigger="change" hx-target="#inspection-list-container" hx-swap="innerHTML" hx-include="[name='class_id'],[name='problem_type']">
+                        <option value="">全部状态</option>
+                        <option value="pending" {% if status == 'pending' %}selected{% endif %}>待处理</option>
+                        <option value="processing" {% if status == 'processing' %}selected{% endif %}>处理中</option>
+                        <option value="resolved" {% if status == 'resolved' %}selected{% endif %}>已解决</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="column is-3">
+            <label class="label">问题类型</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="problem_type" hx-get="/inspections" hx-trigger="change" hx-target="#inspection-list-container" hx-swap="innerHTML" hx-include="[name='class_id'],[name='status']">
+                        <option value="">全部类型</option>
+                        <option value="damaged" {% if problem_type == 'damaged' %}selected{% endif %}>器材损坏</option>
+                        <option value="lost" {% if problem_type == 'lost' %}selected{% endif %}>器材丢失</option>
+                        <option value="overdue" {% if problem_type == 'overdue' %}selected{% endif %}>逾期未还</option>
+                        <option value="other" {% if problem_type == 'other' %}selected{% endif %}>其他问题</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="box" id="inspection-list-container">
+    <table class="table is-fullwidth is-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>领用单号</th>
+                <th>班级</th>
+                <th>器材</th>
+                <th>问题类型</th>
+                <th>处理方式</th>
+                <th>状态</th>
+                <th>抽查时间</th>
+                <th>抽查人</th>
+                <th>可删除</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="inspection-list">
+            {% for inspection in inspections %}
+            {% include 'inspection/_row.html' %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if not inspections %}
+    <p class="has-text-centered has-text-grey py-6">暂无数据</p>
+    {% endif %}
+</div>
+{% endblock %}

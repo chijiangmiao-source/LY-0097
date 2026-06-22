@@ -1,0 +1,56 @@
+<div id="borrow-items-container">
+    <table class="table is-fullwidth is-striped">
+        <thead>
+            <tr>
+                <th>器材编号</th>
+                <th>器材名称</th>
+                <th>分类</th>
+                <th>领用时状态</th>
+                <th>归还时状态</th>
+                <th>归还状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="borrow-items-list">
+            {% for item in order.items %}
+            <tr id="item-{{ item.id }}">
+                <td>{{ item.equipment.equipment_no }}</td>
+                <td>{{ item.equipment.name }}</td>
+                <td>{{ item.equipment.category.name }}</td>
+                <td>
+                    <span class="status-badge {% if item.borrow_condition == 'good' %}status-good{% elif item.borrow_condition == 'damaged' %}status-damaged{% else %}status-pending{% endif %}">
+                        {{ item.borrow_condition | status_label('condition') }}
+                    </span>
+                </td>
+                <td>
+                    {% if item.return_condition %}
+                    <span class="status-badge {% if item.return_condition == 'good' %}status-good{% elif item.return_condition == 'damaged' %}status-damaged{% else %}status-pending{% endif %}">
+                        {{ item.return_condition | status_label('condition') }}
+                    </span>
+                    {% else %}
+                    <span class="has-text-grey">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="status-badge {% if item.return_status == 'pending' %}status-pending{% elif item.return_status == 'returned' %}status-returned{% elif item.return_status == 'damaged' %}status-damaged{% else %}status-closed{% endif %}">
+                        {{ item.return_status | status_label('return_status') }}
+                    </span>
+                </td>
+                <td>
+                    {% if item.return_status == 'pending' and order.return_status == 'pending' %}
+                    <div class="table-actions">
+                        <div class="select is-small">
+                            <select name="return_condition_{{ item.id }}" form="return-form">
+                                <option value="">选择归还状态</option>
+                                <option value="good">完好</option>
+                                <option value="damaged">损坏</option>
+                            </select>
+                        </div>
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}领用归还管理{% endblock %}
+{% block content %}
+<div class="level">
+    <div class="level-left">
+        <h1 class="title">领用归还管理</h1>
+    </div>
+    <div class="level-right">
+        <button class="button is-primary" hx-get="/borrow-orders/new" hx-target="#modal" hx-swap="innerHTML">
+            <span class="icon"><i class="fas fa-plus"></i></span>
+            <span>新建领用单</span>
+        </button>
+    </div>
+</div>
+
+<div class="box">
+    <div class="columns is-multiline">
+        <div class="column is-3">
+            <label class="label">班级</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="class_id" hx-get="/borrow-orders" hx-trigger="change" hx-target="#order-list-container" hx-swap="innerHTML" hx-include="[name='status'],[name='start_date'],[name='end_date']">
+                        <option value="">全部班级</option>
+                        {% for cls in classes %}
+                        <option value="{{ cls.id }}" {% if class_id == cls.id %}selected{% endif %}>{{ cls.full_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="column is-2">
+            <label class="label">归还状态</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="status" hx-get="/borrow-orders" hx-trigger="change" hx-target="#order-list-container" hx-swap="innerHTML" hx-include="[name='class_id'],[name='start_date'],[name='end_date']">
+                        <option value="">全部状态</option>
+                        <option value="pending" {% if status == 'pending' %}selected{% endif %}>待归还</option>
+                        <option value="returned" {% if status == 'returned' %}selected{% endif %}>已归还</option>
+                        <option value="closed" {% if status == 'closed' %}selected{% endif %}>已结案</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="column is-3">
+            <label class="label">开始日期</label>
+            <div class="control">
+                <input class="input" type="date" name="start_date" value="{{ start_date if start_date else '' }}" hx-get="/borrow-orders" hx-trigger="change" hx-target="#order-list-container" hx-swap="innerHTML" hx-include="[name='class_id'],[name='status'],[name='end_date']">
+            </div>
+        </div>
+        <div class="column is-3">
+            <label class="label">结束日期</label>
+            <div class="control">
+                <input class="input" type="date" name="end_date" value="{{ end_date if end_date else '' }}" hx-get="/borrow-orders" hx-trigger="change" hx-target="#order-list-container" hx-swap="innerHTML" hx-include="[name='class_id'],[name='status'],[name='start_date']">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="box" id="order-list-container">
+    <table class="table is-fullwidth is-striped">
+        <thead>
+            <tr>
+                <th>领用单号</th>
+                <th>班级</th>
+                <th>领用教师</th>
+                <th>领用时间</th>
+                <th>预计归还</th>
+                <th>归还状态</th>
+                <th>责任状态</th>
+                <th>用途</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="order-list">
+            {% for order in orders %}
+            {% include 'borrow_order/_row.html' %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if not orders %}
+    <p class="has-text-centered has-text-grey py-6">暂无数据</p>
+    {% endif %}
+</div>
+{% endblock %}

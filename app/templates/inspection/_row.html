@@ -1,0 +1,44 @@
+<tr id="inspection-{{ inspection.id }}">
+    <td>{{ inspection.id }}</td>
+    <td>{{ inspection.borrow_order.order_no }}</td>
+    <td>{{ inspection.borrow_order.grade_class.full_name }}</td>
+    <td>{{ inspection.equipment.name }} ({{ inspection.equipment.equipment_no }})</td>
+    <td>
+        <span class="status-badge status-damaged">
+            {{ inspection.problem_type | status_label('problem_type') }}
+        </span>
+    </td>
+    <td>
+        {% if inspection.handling_path %}
+        <span class="status-badge status-pending">
+            {{ inspection.handling_path | status_label('handling_path') }}
+        </span>
+        {% else %}
+        <span class="has-text-grey">-</span>
+        {% endif %}
+    </td>
+    <td>
+        <span class="status-badge {% if inspection.status == 'pending' %}status-pending{% elif inspection.status == 'processing' %}status-pending{% elif inspection.status == 'resolved' %}status-good{% endif %}">
+            {{ inspection.status | status_label('inspection_status') }}
+        </span>
+    </td>
+    <td>{{ inspection.inspection_time | format_date }}</td>
+    <td>{{ inspection.inspector.full_name }}</td>
+    <td>
+        <span class="status-badge {% if inspection.is_deletable %}status-good{% else %}status-damaged{% endif %}">
+            {{ '是' if inspection.is_deletable else '否' }}
+        </span>
+    </td>
+    <td>
+        <div class="table-actions">
+            <button class="button is-small is-info" hx-get="/inspections/{{ inspection.id }}/edit" hx-target="#modal" hx-swap="innerHTML">
+                <span class="icon"><i class="fas fa-edit"></i></span>
+            </button>
+            {% if inspection.is_deletable %}
+            <button class="button is-small is-danger" onclick="confirmDelete('/inspections/{{ inspection.id }}', 'inspection-{{ inspection.id }}')">
+                <span class="icon"><i class="fas fa-trash"></i></span>
+            </button>
+            {% endif %}
+        </div>
+    </td>
+</tr>

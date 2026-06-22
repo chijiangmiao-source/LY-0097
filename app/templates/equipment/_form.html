@@ -1,0 +1,102 @@
+<div class="modal-overlay" style="display: flex;">
+    <div class="modal-content">
+        <div class="box">
+            <div class="level">
+                <div class="level-left">
+                    <h2 class="subtitle">{% if equip %}编辑器材{% else %}添加器材{% endif %}</h2>
+                </div>
+                <div class="level-right">
+                    <button class="delete" onclick="closeModal()"></button>
+                </div>
+            </div>
+            <form {% if equip %}hx-put="/equipment/{{ equip.id }}" hx-target="#equipment-{{ equip.id }}" hx-swap="outerHTML"{% else %}hx-post="/equipment" hx-target="#equipment-list" hx-swap="beforeend"{% endif %} onsubmit="closeModal()">
+                <div class="field">
+                    <label class="label">器材编号</label>
+                    <div class="control">
+                        <input class="input" type="text" name="equipment_no" placeholder="如：TY-001" value="{{ equip.equipment_no if equip else '' }}" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">器材名称</label>
+                    <div class="control">
+                        <input class="input" type="text" name="name" placeholder="如：篮球" value="{{ equip.name if equip else '' }}" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">分类</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="category_id" required>
+                                {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if equip and equip.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">器材室</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="room_id" required>
+                                {% for r in rooms %}
+                                <option value="{{ r.id }}" {% if equip and equip.room_id == r.id %}selected{% endif %}>{{ r.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">完好状态</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="condition" required>
+                                <option value="good" {% if equip and equip.condition == 'good' %}selected{% endif %}>完好</option>
+                                <option value="damaged" {% if equip and equip.condition == 'damaged' %}selected{% endif %}>损坏</option>
+                                <option value="repairing" {% if equip and equip.condition == 'repairing' %}selected{% endif %}>维修中</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">当前状态</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="status" required>
+                                <option value="available" {% if equip and equip.status == 'available' %}selected{% endif %}>可用</option>
+                                <option value="borrowed" {% if equip and equip.status == 'borrowed' %}selected{% endif %}>已借出</option>
+                                <option value="scrapped" {% if equip and equip.status == 'scrapped' %}selected{% endif %}>已报废</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">规格</label>
+                    <div class="control">
+                        <input class="input" type="text" name="specification" placeholder="如：标准7号" value="{{ equip.specification if equip else '' }}">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">品牌</label>
+                    <div class="control">
+                        <input class="input" type="text" name="brand" placeholder="如：斯伯丁" value="{{ equip.brand if equip else '' }}">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">备注</label>
+                    <div class="control">
+                        <textarea class="textarea" name="remark" placeholder="备注信息">{{ equip.remark if equip else '' }}</textarea>
+                    </div>
+                </div>
+                <div class="field is-grouped is-grouped-right">
+                    <div class="control">
+                        <button type="button" class="button" onclick="closeModal()">取消</button>
+                    </div>
+                    <div class="control">
+                        <button type="submit" class="button is-primary">确定</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}领用单详情 - {{ order.order_no }}{% endblock %}
+{% block content %}
+<div class="level">
+    <div class="level-left">
+        <button class="button" onclick="history.back()">
+            <span class="icon"><i class="fas fa-arrow-left"></i></span>
+            <span>返回</span>
+        </button>
+        <h1 class="title" style="margin-left: 20px;">领用单详情</h1>
+    </div>
+    <div class="level-right">
+        {% if order.return_status == 'pending' %}
+        <button class="button is-success" hx-get="/borrow-orders/{{ order.id }}/return" hx-target="#modal" hx-swap="innerHTML">
+            <span class="icon"><i class="fas fa-undo"></i></span>
+            <span>归还登记</span>
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+<div class="box">
+    <h2 class="subtitle">基本信息</h2>
+    <div class="columns">
+        <div class="column is-4">
+            <p><strong>领用单号：</strong>{{ order.order_no }}</p>
+            <p><strong>班级：</strong>{{ order.grade_class.full_name }}</p>
+            <p><strong>领用教师：</strong>{{ order.teacher }}</p>
+        </div>
+        <div class="column is-4">
+            <p><strong>领用时间：</strong>{{ order.borrow_time | format_date }}</p>
+            <p><strong>预计归还：</strong>{{ order.return_time | format_date if order.return_time else '-' }}</p>
+            <p><strong>用途：</strong>{{ order.purpose or '-' }}</p>
+        </div>
+        <div class="column is-4">
+            <p><strong>归还状态：</strong>
+                <span class="status-badge {% if order.return_status == 'pending' %}status-pending{% elif order.return_status == 'returned' %}status-returned{% elif order.return_status == 'closed' %}status-closed{% else %}status-damaged{% endif %}">
+                    {{ order.return_status | status_label('return_status') }}
+                </span>
+            </p>
+            <p><strong>责任状态：</strong>
+                <span class="status-badge {% if order.liability_status == 'pending' %}status-pending{% elif order.liability_status == 'confirmed' %}status-good{% else %}status-damaged{% endif %}">
+                    {{ order.liability_status | status_label('liability_status') }}
+                </span>
+            </p>
+            <p><strong>操作员：</strong>{{ order.operator.full_name }}</p>
+        </div>
+    </div>
+    {% if order.remark %}
+    <p><strong>备注：</strong>{{ order.remark }}</p>
+    {% endif %}
+</div>
+
+<div class="box">
+    <h2 class="subtitle">领用器材清单</h2>
+    {% include 'borrow_order/_items.html' %}
+</div>
+
+{% if order.return_status == 'pending' %}
+<div class="box">
+    <h2 class="subtitle">归还登记</h2>
+    <form hx-post="/borrow-orders/{{ order.id }}/return" hx-target="#borrow-items-container" hx-swap="innerHTML">
+        <div class="field is-grouped is-grouped-right">
+            <div class="control">
+                <button type="submit" class="button is-success">
+                    <span class="icon"><i class="fas fa-check"></i></span>
+                    <span>确认归还</span>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

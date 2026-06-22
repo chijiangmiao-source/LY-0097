@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}登录 - 体育器材管理系统{% endblock %}
+{% block auth_content %}
+<div class="hero is-fullheight is-light">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-4">
+                    <div class="box">
+                        <h1 class="title has-text-centered">
+                            <span class="icon has-text-primary" style="font-size: 2em;">
+                                <i class="fas fa-dumbbell"></i>
+                            </span>
+                        </h1>
+                        <h2 class="subtitle has-text-centered">体育器材管理系统</h2>
+                        {% if error %}
+                        <div class="notification is-danger">
+                            {{ error }}
+                        </div>
+                        {% endif %}
+                        <form hx-post="/login" hx-target="body" hx-swap="outerHTML">
+                            <div class="field">
+                                <label class="label">用户名</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="text" name="username" placeholder="请输入用户名" required>
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">密码</label>
+                                <div class="control has-icons-left">
+                                    <input class="input" type="password" name="password" placeholder="请输入密码" required>
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <div class="control">
+                                    <button class="button is-primary is-fullwidth" type="submit">
+                                        <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
+                                        <span>登录</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <p class="has-text-centered has-text-grey is-size-7">
+                            默认账号: admin / admin123
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

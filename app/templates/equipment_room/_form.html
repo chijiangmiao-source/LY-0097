@@ -1,0 +1,48 @@
+<div class="modal-overlay" style="display: flex;">
+    <div class="modal-content">
+        <div class="box">
+            <div class="level">
+                <div class="level-left">
+                    <h2 class="subtitle">{% if room %}编辑器材室{% else %}添加器材室{% endif %}</h2>
+                </div>
+                <div class="level-right">
+                    <button class="delete" onclick="closeModal()"></button>
+                </div>
+            </div>
+            <form {% if room %}hx-put="/equipment-rooms/{{ room.id }}" hx-target="#room-{{ room.id }}" hx-swap="outerHTML"{% else %}hx-post="/equipment-rooms" hx-target="#room-list" hx-swap="beforeend"{% endif %} onsubmit="closeModal()">
+                <div class="field">
+                    <label class="label">器材室名称</label>
+                    <div class="control">
+                        <input class="input" type="text" name="name" placeholder="器材室名称" value="{{ room.name if room else '' }}" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">位置</label>
+                    <div class="control">
+                        <input class="input" type="text" name="location" placeholder="如：教学楼1号楼101" value="{{ room.location if room else '' }}">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">管理员</label>
+                    <div class="control">
+                        <input class="input" type="text" name="manager" placeholder="管理员姓名" value="{{ room.manager if room else '' }}">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">描述</label>
+                    <div class="control">
+                        <textarea class="textarea" name="description" placeholder="器材室描述">{{ room.description if room else '' }}</textarea>
+                    </div>
+                </div>
+                <div class="field is-grouped is-grouped-right">
+                    <div class="control">
+                        <button type="button" class="button" onclick="closeModal()">取消</button>
+                    </div>
+                    <div class="control">
+                        <button type="submit" class="button is-primary">确定</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

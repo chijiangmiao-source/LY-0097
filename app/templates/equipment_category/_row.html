@@ -1,0 +1,17 @@
+<tr id="category-{{ category.id }}">
+    <td>{{ category.id }}</td>
+    <td>{{ category.code }}</td>
+    <td>{{ category.name }}</td>
+    <td>{{ category.description or '-' }}</td>
+    <td>{{ category.created_at | format_date }}</td>
+    <td>
+        <div class="table-actions">
+            <button class="button is-small is-info" hx-get="/equipment-categories/{{ category.id }}/edit" hx-target="#modal" hx-swap="innerHTML">
+                <span class="icon"><i class="fas fa-edit"></i></span>
+            </button>
+            <button class="button is-small is-danger" onclick="confirmDelete('/equipment-categories/{{ category.id }}', 'category-{{ category.id }}')">
+                <span class="icon"><i class="fas fa-trash"></i></span>
+            </button>
+        </div>
+    </td>
+</tr>

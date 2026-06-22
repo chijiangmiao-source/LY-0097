@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}器材室管理{% endblock %}
+{% block content %}
+<div class="level">
+    <div class="level-left">
+        <h1 class="title">器材室管理</h1>
+    </div>
+    <div class="level-right">
+        <button class="button is-primary" hx-get="/equipment-rooms/new" hx-target="#modal" hx-swap="innerHTML">
+            <span class="icon"><i class="fas fa-plus"></i></span>
+            <span>添加器材室</span>
+        </button>
+    </div>
+</div>
+
+<div class="box">
+    <table class="table is-fullwidth is-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>器材室名称</th>
+                <th>位置</th>
+                <th>管理员</th>
+                <th>描述</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="room-list">
+            {% for room in rooms %}
+            {% include 'equipment_room/_row.html' %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if not rooms %}
+    <p class="has-text-centered has-text-grey py-6">暂无数据</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+<div class="modal-overlay" style="display: flex;">
+    <div class="modal-content">
+        <div class="box">
+            <div class="level">
+                <div class="level-left">
+                    <h2 class="subtitle">{% if category %}编辑分类{% else %}添加分类{% endif %}</h2>
+                </div>
+                <div class="level-right">
+                    <button class="delete" onclick="closeModal()"></button>
+                </div>
+            </div>
+            <form {% if category %}hx-put="/equipment-categories/{{ category.id }}" hx-target="#category-{{ category.id }}" hx-swap="outerHTML"{% else %}hx-post="/equipment-categories" hx-target="#category-list" hx-swap="beforeend"{% endif %} onsubmit="closeModal()">
+                <div class="field">
+                    <label class="label">分类编码</label>
+                    <div class="control">
+                        <input class="input" type="text" name="code" placeholder="如：TY001" value="{{ category.code if category else '' }}" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">分类名称</label>
+                    <div class="control">
+                        <input class="input" type="text" name="name" placeholder="如：球类器材" value="{{ category.name if category else '' }}" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">描述</label>
+                    <div class="control">
+                        <textarea class="textarea" name="description" placeholder="分类描述">{{ category.description if category else '' }}</textarea>
+                    </div>
+                </div>
+                <div class="field is-grouped is-grouped-right">
+                    <div class="control">
+                        <button type="button" class="button" onclick="closeModal()">取消</button>
+                    </div>
+                    <div class="control">
+                        <button type="submit" class="button is-primary">确定</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

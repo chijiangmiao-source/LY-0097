@@ -1,0 +1,30 @@
+<tr id="order-{{ order.id }}">
+    <td><strong>{{ order.order_no }}</strong></td>
+    <td>{{ order.grade_class.full_name }}</td>
+    <td>{{ order.teacher }}</td>
+    <td>{{ order.borrow_time | format_date }}</td>
+    <td>{{ order.return_time | format_date if order.return_time else '-' }}</td>
+    <td>
+        <span class="status-badge {% if order.return_status == 'pending' %}status-pending{% elif order.return_status == 'returned' %}status-returned{% elif order.return_status == 'closed' %}status-closed{% else %}status-damaged{% endif %}">
+            {{ order.return_status | status_label('return_status') }}
+        </span>
+    </td>
+    <td>
+        <span class="status-badge {% if order.liability_status == 'pending' %}status-pending{% elif order.liability_status == 'confirmed' %}status-good{% else %}status-damaged{% endif %}">
+            {{ order.liability_status | status_label('liability_status') }}
+        </span>
+    </td>
+    <td>{{ order.purpose or '-' }}</td>
+    <td>
+        <div class="table-actions">
+            <button class="button is-small is-info" hx-get="/borrow-orders/{{ order.id }}" hx-target="body">
+                <span class="icon"><i class="fas fa-eye"></i></span>
+            </button>
+            {% if order.return_status == 'pending' %}
+            <button class="button is-small is-success" hx-get="/borrow-orders/{{ order.id }}/return" hx-target="#modal" hx-swap="innerHTML">
+                <span class="icon"><i class="fas fa-undo"></i></span>
+            </button>
+            {% endif %}
+        </div>
+    </td>
+</tr>

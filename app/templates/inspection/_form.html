@@ -1,0 +1,104 @@
+<div class="modal-overlay" style="display: flex;">
+    <div class="modal-content">
+        <div class="box">
+            <div class="level">
+                <div class="level-left">
+                    <h2 class="subtitle">{% if inspection %}编辑抽查记录{% else %}添加抽查记录{% endif %}</h2>
+                </div>
+                <div class="level-right">
+                    <button class="delete" onclick="closeModal()"></button>
+                </div>
+            </div>
+            <form {% if inspection %}hx-put="/inspections/{{ inspection.id }}" hx-target="#inspection-{{ inspection.id }}" hx-swap="outerHTML"{% else %}hx-post="/inspections" hx-target="#inspection-list" hx-swap="beforeend"{% endif %} onsubmit="closeModal()">
+                <div class="field">
+                    <label class="label">领用单</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="borrow_order_id" hx-get="/inspections/equipment-options" hx-trigger="change" hx-target="#equipment-select" hx-swap="innerHTML" required>
+                                <option value="">请选择领用单</option>
+                                {% for order in orders %}
+                                <option value="{{ order.id }}" {% if inspection and inspection.borrow_order_id == order.id %}selected{% endif %}>
+                                    {{ order.order_no }} - {{ order.grade_class.full_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">问题器材</label>
+                    <div class="control">
+                        <div class="select is-fullwidth" id="equipment-select">
+                            <select name="equipment_id" required>
+                                {% if inspection %}
+                                {% include 'inspection/_equipment_options.html' %}
+                                {% else %}
+                                <option value="">请先选择领用单</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">问题类型</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="problem_type" required>
+                                <option value="damaged" {% if inspection and inspection.problem_type == 'damaged' %}selected{% endif %}>器材损坏</option>
+                                <option value="lost" {% if inspection and inspection.problem_type == 'lost' %}selected{% endif %}>器材丢失</option>
+                                <option value="overdue" {% if inspection and inspection.problem_type == 'overdue' %}selected{% endif %}>逾期未还</option>
+                                <option value="other" {% if inspection and inspection.problem_type == 'other' %}selected{% endif %}>其他问题</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">问题描述</label>
+                    <div class="control">
+                        <textarea class="textarea" name="problem_description" placeholder="详细描述问题情况">{{ inspection.problem_description if inspection else '' }}</textarea>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">处理方式</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="handling_path">
+                                <option value="">请选择处理方式</option>
+                                <option value="repair" {% if inspection and inspection.handling_path == 'repair' %}selected{% endif %}>维修</option>
+                                <option value="replace" {% if inspection and inspection.handling_path == 'replace' %}selected{% endif %}>更换</option>
+                                <option value="compensation" {% if inspection and inspection.handling_path == 'compensation' %}selected{% endif %}>赔偿</option>
+                                <option value="other" {% if inspection and inspection.handling_path == 'other' %}selected{% endif %}>其他</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">状态</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="status" required>
+                                <option value="pending" {% if inspection and inspection.status == 'pending' %}selected{% endif %}>待处理</option>
+                                <option value="processing" {% if inspection and inspection.status == 'processing' %}selected{% endif %}>处理中</option>
+                                <option value="resolved" {% if inspection and inspection.status == 'resolved' %}selected{% endif %}>已解决</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">备注</label>
+                    <div class="control">
+                        <textarea class="textarea" name="remark" placeholder="备注信息">{{ inspection.remark if inspection else '' }}</textarea>
+                    </div>
+                </div>
+                <div class="field is-grouped is-grouped-right">
+                    <div class="control">
+                        <button type="button" class="button" onclick="closeModal()">取消</button>
+                    </div>
+                    <div class="control">
+                        <button type="submit" class="button is-primary">确定</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

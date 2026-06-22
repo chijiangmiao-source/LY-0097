@@ -1,0 +1,54 @@
+<div class="modal-overlay" style="display: flex;">
+    <div class="modal-content">
+        <div class="box">
+            <div class="level">
+                <div class="level-left">
+                    <h2 class="subtitle">{% if cls %}编辑班级{% else %}添加班级{% endif %}</h2>
+                </div>
+                <div class="level-right">
+                    <button class="delete" onclick="closeModal()"></button>
+                </div>
+            </div>
+            <form {% if cls %}hx-put="/grade-classes/{{ cls.id }}" hx-target="#class-{{ cls.id }}" hx-swap="outerHTML"{% else %}hx-post="/grade-classes" hx-target="#class-list" hx-swap="beforeend"{% endif %} onsubmit="closeModal()">
+                <div class="field">
+                    <label class="label">年级</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="grade" required>
+                                {% for g in grades %}
+                                <option value="{{ g }}" {% if cls and cls.grade == g %}selected{% endif %}>{{ g }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">班级名称</label>
+                    <div class="control">
+                        <input class="input" type="text" name="class_name" placeholder="如：1班" value="{{ cls.class_name if cls else '' }}" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">班号</label>
+                    <div class="control">
+                        <input class="input" type="number" name="class_number" placeholder="如：1" value="{{ cls.class_number if cls else '' }}" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">班主任</label>
+                    <div class="control">
+                        <input class="input" type="text" name="head_teacher" placeholder="班主任姓名" value="{{ cls.head_teacher if cls else '' }}">
+                    </div>
+                </div>
+                <div class="field is-grouped is-grouped-right">
+                    <div class="control">
+                        <button type="button" class="button" onclick="closeModal()">取消</button>
+                    </div>
+                    <div class="control">
+                        <button type="submit" class="button is-primary">确定</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

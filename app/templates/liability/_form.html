@@ -1,0 +1,83 @@
+<div class="modal-overlay" style="display: flex;">
+    <div class="modal-content">
+        <div class="box">
+            <div class="level">
+                <div class="level-left">
+                    <h2 class="subtitle">{% if judgment %}编辑责任判定{% else %}添加责任判定{% endif %}</h2>
+                </div>
+                <div class="level-right">
+                    <button class="delete" onclick="closeModal()"></button>
+                </div>
+            </div>
+            <form {% if judgment %}hx-put="/liability/{{ judgment.id }}" hx-target="#liability-{{ judgment.id }}" hx-swap="outerHTML"{% else %}hx-post="/liability" hx-target="#liability-list" hx-swap="beforeend"{% endif %} onsubmit="closeModal()">
+                <div class="field">
+                    <label class="label">抽查记录</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="inspection_record_id" required>
+                                <option value="">请选择抽查记录</option>
+                                {% for inspection in inspections %}
+                                <option value="{{ inspection.id }}" {% if judgment and judgment.inspection_record_id == inspection.id %}selected{% endif %}>
+                                    #{{ inspection.id }} - {{ inspection.equipment.name }} - {{ inspection.borrow_order.grade_class.full_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">班级</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="grade_class_id" required>
+                                {% for cls in classes %}
+                                <option value="{{ cls.id }}" {% if judgment and judgment.grade_class_id == cls.id %}selected{% endif %}>{{ cls.full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">责任类型</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="liability_type" required>
+                                <option value="student" {% if judgment and judgment.liability_type == 'student' %}selected{% endif %}>学生责任</option>
+                                <option value="teacher" {% if judgment and judgment.liability_type == 'teacher' %}selected{% endif %}>教师责任</option>
+                                <option value="school" {% if judgment and judgment.liability_type == 'school' %}selected{% endif %}>学校责任</option>
+                                <option value="natural" {% if judgment and judgment.liability_type == 'natural' %}selected{% endif %}>自然损耗</option>
+                                <option value="other" {% if judgment and judgment.liability_type == 'other' %}selected{% endif %}>其他责任</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">责任人</label>
+                    <div class="control">
+                        <input class="input" type="text" name="liable_person" placeholder="责任人姓名" value="{{ judgment.liable_person if judgment else '' }}" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">判定结果</label>
+                    <div class="control">
+                        <textarea class="textarea" name="judgment_result" placeholder="详细的责任判定结果描述" required>{{ judgment.judgment_result if judgment else '' }}</textarea>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">备注</label>
+                    <div class="control">
+                        <textarea class="textarea" name="remark" placeholder="备注信息">{{ judgment.remark if judgment else '' }}</textarea>
+                    </div>
+                </div>
+                <div class="field is-grouped is-grouped-right">
+                    <div class="control">
+                        <button type="button" class="button" onclick="closeModal()">取消</button>
+                    </div>
+                    <div class="control">
+                        <button type="submit" class="button is-primary">确定</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

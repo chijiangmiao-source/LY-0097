@@ -1,0 +1,18 @@
+<tr id="class-{{ cls.id }}">
+    <td>{{ cls.id }}</td>
+    <td>{{ cls.grade }}</td>
+    <td>{{ cls.full_name }}</td>
+    <td>{{ cls.class_number }}</td>
+    <td>{{ cls.head_teacher or '-' }}</td>
+    <td>{{ cls.created_at | format_date }}</td>
+    <td>
+        <div class="table-actions">
+            <button class="button is-small is-info" hx-get="/grade-classes/{{ cls.id }}/edit" hx-target="#modal" hx-swap="innerHTML">
+                <span class="icon"><i class="fas fa-edit"></i></span>
+            </button>
+            <button class="button is-small is-danger" onclick="confirmDelete('/grade-classes/{{ cls.id }}', 'class-{{ cls.id }}')">
+                <span class="icon"><i class="fas fa-trash"></i></span>
+            </button>
+        </div>
+    </td>
+</tr>

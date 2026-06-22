@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}首页 - 体育器材管理系统{% endblock %}
+{% block content %}
+<h1 class="title">仪表盘</h1>
+<div class="columns">
+    <div class="column">
+        <div class="box has-text-centered">
+            <p class="heading">待处理领用单</p>
+            <p class="title has-text-warning">{{ pending_orders }}</p>
+            <span class="icon is-large"><i class="fas fa-clipboard-list fa-2x"></i></span>
+        </div>
+    </div>
+    <div class="column">
+        <div class="box has-text-centered">
+            <p class="heading">器材总数</p>
+            <p class="title has-text-info">{{ total_equipment }}</p>
+            <span class="icon is-large"><i class="fas fa-boxes fa-2x"></i></span>
+        </div>
+    </div>
+    <div class="column">
+        <div class="box has-text-centered">
+            <p class="heading">可用器材</p>
+            <p class="title has-text-success">{{ available_equipment }}</p>
+            <span class="icon is-large"><i class="fas fa-check-circle fa-2x"></i></span>
+        </div>
+    </div>
+    <div class="column">
+        <div class="box has-text-centered">
+            <p class="heading">待处理抽查</p>
+            <p class="title has-text-danger">{{ pending_inspections }}</p>
+            <span class="icon is-large"><i class="fas fa-exclamation-triangle fa-2x"></i></span>
+        </div>
+    </div>
+</div>
+
+<div class="columns">
+    <div class="column is-8">
+        <div class="box">
+            <h2 class="subtitle">本周统计</h2>
+            <div class="columns">
+                <div class="column has-text-centered">
+                    <p class="heading">归还及时率</p>
+                    <p class="title is-4 {% if weekly_report.return_timeliness_rate >= 90 %}has-text-success{% elif weekly_report.return_timeliness_rate >= 70 %}has-text-warning{% else %}has-text-danger{% endif %}">
+                        {{ weekly_report.return_timeliness_rate }}%
+                    </p>
+                </div>
+                <div class="column has-text-centered">
+                    <p class="heading">器材异常率</p>
+                    <p class="title is-4 {% if weekly_report.equipment_abnormal_rate <= 10 %}has-text-success{% elif weekly_report.equipment_abnormal_rate <= 20 %}has-text-warning{% else %}has-text-danger{% endif %}">
+                        {{ weekly_report.equipment_abnormal_rate }}%
+                    </p>
+                </div>
+            </div>
+            <div class="content">
+                <p class="heading">责任分布</p>
+                <div class="columns is-multiline">
+                    {% set liability_labels = {'student': '学生', 'teacher': '教师', 'school': '学校', 'natural': '自然损耗', 'other': '其他'} %}
+                    {% for key, value in weekly_report.liability_distribution.items() %}
+                    <div class="column is-one-fifth">
+                        <div class="has-text-centered">
+                            <p class="is-size-7 has-text-grey">{{ liability_labels[key] }}</p>
+                            <p class="title is-5">{{ value.percentage }}%</p>
+                            <p class="is-size-7 has-text-grey">({{ value.count }}件)</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column is-4">
+        <div class="box">
+            <h2 class="subtitle">最近领用记录</h2>
+            {% if recent_orders %}
+            <div class="content">
+                {% for order in recent_orders %}
+                <div class="box" style="margin-bottom: 8px; padding: 12px;">
+                    <div class="is-flex is-justify-content-space-between">
+                        <div>
+                            <strong>{{ order.order_no }}</strong>
+                            <br>
+                            <span class="is-size-7 has-text-grey">{{ order.grade_class.full_name }} - {{ order.teacher }}</span>
+                        </div>
+                        <span class="status-badge {% if order.return_status == 'pending' %}status-pending{% elif order.return_status == 'closed' %}status-closed{% else %}status-damaged{% endif %}">
+                            {{ order.return_status | status_label('return_status') }}
+                        </span>
+                    </div>
+                    <p class="is-size-7 has-text-grey mt-2">
+                        <i class="far fa-clock"></i> {{ order.borrow_time | format_date }}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="has-text-grey">暂无领用记录</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

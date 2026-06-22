@@ -1,0 +1,18 @@
+<tr id="room-{{ room.id }}">
+    <td>{{ room.id }}</td>
+    <td>{{ room.name }}</td>
+    <td>{{ room.location or '-' }}</td>
+    <td>{{ room.manager or '-' }}</td>
+    <td>{{ room.description or '-' }}</td>
+    <td>{{ room.created_at | format_date }}</td>
+    <td>
+        <div class="table-actions">
+            <button class="button is-small is-info" hx-get="/equipment-rooms/{{ room.id }}/edit" hx-target="#modal" hx-swap="innerHTML">
+                <span class="icon"><i class="fas fa-edit"></i></span>
+            </button>
+            <button class="button is-small is-danger" onclick="confirmDelete('/equipment-rooms/{{ room.id }}', 'room-{{ room.id }}')">
+                <span class="icon"><i class="fas fa-trash"></i></span>
+            </button>
+        </div>
+    </td>
+</tr>

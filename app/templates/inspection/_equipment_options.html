@@ -1,0 +1,11 @@
+{% if inspection %}
+<option value="{{ inspection.equipment.id }}" selected>
+    {{ inspection.equipment.name }} ({{ inspection.equipment.equipment_no }})
+</option>
+{% else %}
+{% for item in order.items %}
+<option value="{{ item.equipment.id }}">
+    {{ item.equipment.name }} ({{ item.equipment.equipment_no }})
+</option>
+{% endfor %}
+{% endif %}

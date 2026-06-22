@@ -1,0 +1,29 @@
+<tr id="equipment-{{ equip.id }}">
+    <td>{{ equip.equipment_no }}</td>
+    <td>{{ equip.name }}</td>
+    <td>{{ equip.category.name }}</td>
+    <td>{{ equip.room.name }}</td>
+    <td>
+        <span class="status-badge {% if equip.condition == 'good' %}status-good{% elif equip.condition == 'damaged' %}status-damaged{% else %}status-pending{% endif %}">
+            {{ equip.condition | status_label('condition') }}
+        </span>
+    </td>
+    <td>
+        <span class="status-badge {% if equip.status == 'available' %}status-good{% elif equip.status == 'borrowed' %}status-pending{% else %}status-damaged{% endif %}">
+            {{ equip.status | status_label('status') }}
+        </span>
+    </td>
+    <td>{{ equip.specification or '-' }}</td>
+    <td>{{ equip.brand or '-' }}</td>
+    <td>{{ equip.created_at | format_date }}</td>
+    <td>
+        <div class="table-actions">
+            <button class="button is-small is-info" hx-get="/equipment/{{ equip.id }}/edit" hx-target="#modal" hx-swap="innerHTML">
+                <span class="icon"><i class="fas fa-edit"></i></span>
+            </button>
+            <button class="button is-small is-danger" onclick="confirmDelete('/equipment/{{ equip.id }}', 'equipment-{{ equip.id }}')">
+                <span class="icon"><i class="fas fa-trash"></i></span>
+            </button>
+        </div>
+    </td>
+</tr>

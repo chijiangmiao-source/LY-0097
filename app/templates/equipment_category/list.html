@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}器材分类管理{% endblock %}
+{% block content %}
+<div class="level">
+    <div class="level-left">
+        <h1 class="title">器材分类管理</h1>
+    </div>
+    <div class="level-right">
+        <button class="button is-primary" hx-get="/equipment-categories/new" hx-target="#modal" hx-swap="innerHTML">
+            <span class="icon"><i class="fas fa-plus"></i></span>
+            <span>添加分类</span>
+        </button>
+    </div>
+</div>
+
+<div class="box">
+    <table class="table is-fullwidth is-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>分类编码</th>
+                <th>分类名称</th>
+                <th>描述</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="category-list">
+            {% for category in categories %}
+            {% include 'equipment_category/_row.html' %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if not categories %}
+    <p class="has-text-centered has-text-grey py-6">暂无数据</p>
+    {% endif %}
+</div>
+{% endblock %}

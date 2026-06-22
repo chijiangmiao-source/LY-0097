@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}器材管理{% endblock %}
+{% block content %}
+<div class="level">
+    <div class="level-left">
+        <h1 class="title">器材管理</h1>
+    </div>
+    <div class="level-right">
+        <button class="button is-primary" hx-get="/equipment/new" hx-target="#modal" hx-swap="innerHTML">
+            <span class="icon"><i class="fas fa-plus"></i></span>
+            <span>添加器材</span>
+        </button>
+    </div>
+</div>
+
+<div class="box">
+    <div class="columns is-multiline">
+        <div class="column is-3">
+            <label class="label">关键词搜索</label>
+            <div class="control has-icons-left">
+                <input class="input" type="text" name="keyword" placeholder="器材编号/名称" value="{{ keyword if keyword else '' }}" hx-get="/equipment" hx-trigger="keyup changed delay:500ms" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='category'],[name='room'],[name='condition'],[name='status']">
+                <span class="icon is-left">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+        </div>
+        <div class="column is-2">
+            <label class="label">分类</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="category" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='room'],[name='condition'],[name='status']">
+                        <option value="">全部分类</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="column is-2">
+            <label class="label">器材室</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="room" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='category'],[name='condition'],[name='status']">
+                        <option value="">全部器材室</option>
+                        {% for r in rooms %}
+                        <option value="{{ r.id }}" {% if room_id == r.id %}selected{% endif %}>{{ r.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="column is-2">
+            <label class="label">完好状态</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="condition" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='category'],[name='room'],[name='status']">
+                        <option value="">全部状态</option>
+                        <option value="good" {% if condition == 'good' %}selected{% endif %}>完好</option>
+                        <option value="damaged" {% if condition == 'damaged' %}selected{% endif %}>损坏</option>
+                        <option value="repairing" {% if condition == 'repairing' %}selected{% endif %}>维修中</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="column is-2">
+            <label class="label">当前状态</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="status" hx-get="/equipment" hx-trigger="change" hx-target="#equipment-list-container" hx-swap="innerHTML" hx-include="[name='keyword'],[name='category'],[name='room'],[name='condition']">
+                        <option value="">全部状态</option>
+                        <option value="available" {% if status == 'available' %}selected{% endif %}>可用</option>
+                        <option value="borrowed" {% if status == 'borrowed' %}selected{% endif %}>已借出</option>
+                        <option value="scrapped" {% if status == 'scrapped' %}selected{% endif %}>已报废</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="box" id="equipment-list-container">
+    <table class="table is-fullwidth is-striped">
+        <thead>
+            <tr>
+                <th>器材编号</th>
+                <th>器材名称</th>
+                <th>分类</th>
+                <th>器材室</th>
+                <th>完好状态</th>
+                <th>当前状态</th>
+                <th>规格</th>
+                <th>品牌</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="equipment-list">
+            {% for equip in equipment %}
+            {% include 'equipment/_row.html' %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if not equipment %}
+    <p class="has-text-centered has-text-grey py-6">暂无数据</p>
+    {% endif %}
+</div>
+{% endblock %}

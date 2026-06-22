@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}周度通报{% endblock %}
+{% block content %}
+<div class="level">
+    <div class="level-left">
+        <h1 class="title">周度通报</h1>
+    </div>
+    <div class="level-right">
+        <p class="has-text-grey">{{ week_start | format_date }} ~ {{ week_end | format_date }}</p>
+    </div>
+</div>
+
+<div class="columns">
+    <div class="column is-6">
+        <div class="box">
+            <h2 class="subtitle has-text-centered">班级归还及时率</h2>
+            <div class="content">
+                {% for class_stat in class_stats %}
+                <div class="box" style="margin-bottom: 12px; padding: 16px;">
+                    <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
+                        <strong>{{ class_stat.class_name }}</strong>
+                        <span class="status-badge {% if class_stat.return_timeliness_rate >= 90 %}status-good{% elif class_stat.return_timeliness_rate >= 70 %}status-pending{% else %}status-damaged{% endif %}">
+                            {{ class_stat.return_timeliness_rate }}%
+                        </span>
+                    </div>
+                    <progress class="progress {% if class_stat.return_timeliness_rate >= 90 %}is-success{% elif class_stat.return_timeliness_rate >= 70 %}is-warning{% else %}is-danger{% endif %}" value="{{ class_stat.return_timeliness_rate }}" max="100"></progress>
+                    <p class="is-size-7 has-text-grey mt-1">
+                        应归还: {{ class_stat.should_return }}件, 已及时归还: {{ class_stat.timely_returned }}件
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="column is-6">
+        <div class="box">
+            <h2 class="subtitle has-text-centered">器材异常率</h2>
+            <div class="content">
+                {% for class_stat in class_stats %}
+                <div class="box" style="margin-bottom: 12px; padding: 16px;">
+                    <div class="is-flex is-justify-content-space-between is-align-items-center mb-2">
+                        <strong>{{ class_stat.class_name }}</strong>
+                        <span class="status-badge {% if class_stat.equipment_abnormal_rate <= 10 %}status-good{% elif class_stat.equipment_abnormal_rate <= 20 %}status-pending{% else %}status-damaged{% endif %}">
+                            {{ class_stat.equipment_abnormal_rate }}%
+                        </span>
+                    </div>
+                    <progress class="progress {% if class_stat.equipment_abnormal_rate <= 10 %}is-success{% elif class_stat.equipment_abnormal_rate <= 20 %}is-warning{% else %}is-danger{% endif %}" value="{{ class_stat.equipment_abnormal_rate }}" max="100"></progress>
+                    <p class="is-size-7 has-text-grey mt-1">
+                        领用器材: {{ class_stat.total_borrowed }}件, 异常: {{ class_stat.abnormal_count }}件
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="box">
+    <h2 class="subtitle has-text-centered">责任判定分布</h2>
+    <div class="columns is-multiline">
+        {% for key, value in liability_distribution.items() %}
+        <div class="column is-one-fifth">
+            <div class="box has-text-centered">
+                <p class="heading">
+                    {% set labels = {'student': '学生责任', 'teacher': '教师责任', 'school': '学校责任', 'natural': '自然损耗', 'other': '其他责任'} %}
+                    {{ labels[key] if labels[key] else key }}
+                </p>
+                <p class="title is-4 {% if key == 'student' or key == 'teacher' %}has-text-warning{% elif key == 'school' %}has-text-info{% elif key == 'natural' %}has-text-success{% else %}has-text-danger{% endif %}">
+                    {{ value.percentage }}%
+                </p>
+                <p class="is-size-7 has-text-grey">({{ value.count }}件)</p>
+                <div class="is-align-self-flex-end mt-4">
+                    <progress class="progress {% if key == 'student' or key == 'teacher' %}is-warning{% elif key == 'school' %}is-info{% elif key == 'natural' %}is-success{% else %}is-danger{% endif %}" value="{{ value.percentage }}" max="100"></progress>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="box">
+    <h2 class="subtitle has-text-centered">各班级统计详情</h2>
+    <table class="table is-fullwidth is-striped">
+        <thead>
+            <tr>
+                <th>班级</th>
+                <th>领用次数</th>
+                <th>领用器材数</th>
+                <th>应归还数</th>
+                <th>及时归还数</th>
+                <th>归还及时率</th>
+                <th>异常数</th>
+                <th>异常率</th>
+                <th>抽查次数</th>
+                <th>责任判定数</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in class_stats %}
+            <tr>
+                <td><strong>{{ stat.class_name }}</strong></td>
+                <td>{{ stat.borrow_count }}</td>
+                <td>{{ stat.total_borrowed }}</td>
+                <td>{{ stat.should_return }}</td>
+                <td>{{ stat.timely_returned }}</td>
+                <td>
+                    <span class="status-badge {% if stat.return_timeliness_rate >= 90 %}status-good{% elif stat.return_timeliness_rate >= 70 %}status-pending{% else %}status-damaged{% endif %}">
+                        {{ stat.return_timeliness_rate }}%
+                    </span>
+                </td>
+                <td>{{ stat.abnormal_count }}</td>
+                <td>
+                    <span class="status-badge {% if stat.equipment_abnormal_rate <= 10 %}status-good{% elif stat.equipment_abnormal_rate <= 20 %}status-pending{% else %}status-damaged{% endif %}">
+                        {{ stat.equipment_abnormal_rate }}%
+                    </span>
+                </td>
+                <td>{{ stat.inspection_count }}</td>
+                <td>{{ stat.liability_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="box">
+    <h2 class="subtitle has-text-centered">本周总体情况</h2>
+    <div class="columns">
+        <div class="column has-text-centered">
+            <div class="box">
+                <p class="heading">总领用次数</p>
+                <p class="title has-text-info">{{ summary.total_borrow_orders }}</p>
+                <span class="icon is-large"><i class="fas fa-clipboard-list fa-2x"></i></span>
+            </div>
+        </div>
+        <div class="column has-text-centered">
+            <div class="box">
+                <p class="heading">归还及时率</p>
+                <p class="title {% if summary.avg_return_timeliness >= 90 %}has-text-success{% elif summary.avg_return_timeliness >= 70 %}has-text-warning{% else %}has-text-danger{% endif %}">
+                    {{ summary.avg_return_timeliness }}%
+                </p>
+                <span class="icon is-large"><i class="fas fa-clock fa-2x"></i></span>
+            </div>
+        </div>
+        <div class="column has-text-centered">
+            <div class="box">
+                <p class="heading">器材异常率</p>
+                <p class="title {% if summary.avg_abnormal_rate <= 10 %}has-text-success{% elif summary.avg_abnormal_rate <= 20 %}has-text-warning{% else %}has-text-danger{% endif %}">
+                    {{ summary.avg_abnormal_rate }}%
+                </p>
+                <span class="icon is-large"><i class="fas fa-exclamation-triangle fa-2x"></i></span>
+            </div>
+        </div>
+        <div class="column has-text-centered">
+            <div class="box">
+                <p class="heading">抽查次数</p>
+                <p class="title has-text-warning">{{ summary.total_inspections }}</p>
+                <span class="icon is-large"><i class="fas fa-search fa-2x"></i></span>
+            </div>
+        </div>
+        <div class="column has-text-centered">
+            <div class="box">
+                <p class="heading">责任判定数</p>
+                <p class="title has-text-danger">{{ summary.total_liability }}</p>
+                <span class="icon is-large"><i class="fas fa-gavel fa-2x"></i></span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
